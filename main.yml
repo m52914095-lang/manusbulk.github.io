@@ -1,0 +1,37 @@
+name: Anime Downloader Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      anime_name:
+        description: 'Anime name to search and download'
+        required: true
+        default: 'Test Dummy Video'
+
+jobs:
+  download-and-process:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg aria2
+        pip install requests
+
+    - name: Run Anime Downloader
+      env:
+        DOODSTREAM_API_KEY: ${{ secrets.DOODSTREAM_API_KEY }}
+        STREAMP2P_API_KEY: ${{ secrets.STREAMP2P_API_KEY }}
+      run: |
+        # In a real GitHub Action, you should modify the script to read from env vars
+        # For this test, we'll run it with the anime name provided in the input
+        python3 anime_downloader.py "${{ github.event.inputs.anime_name }}"
